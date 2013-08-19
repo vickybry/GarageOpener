@@ -105,7 +105,7 @@ static void handle_timer_events(AppContextRef ctx, AppTimerHandle handle, uint32
 
 static void click_provider(ClickConfig** config, void* ctx)
 {
-  config[BUTTON_ID_DOWN]->click.handler = toggle_garage_door;
+  config[BUTTON_ID_SELECT]->click.handler = toggle_garage_door;
 }
 
 static void toggle_garage_door(ClickRecognizerRef rec, void* ctx)
