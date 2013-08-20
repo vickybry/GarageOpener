@@ -10,5 +10,6 @@
 
 #define GARAGE_TARGET_NAME    "Garage"
 
-#define GARAGE_POLLING_INTERVAL       4000 // 4 secs
 #define GARAGE_POLLING_TIMER_COOKIE   1234
+#define GARAGE_POLLING_INTERVAL       (5 * 1000) // 5 sec
+#define GARAGE_KEEPALIVE_INTERVAL     (120 * 1000) // 2 mins

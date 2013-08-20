@@ -33,6 +33,7 @@ static TextLayer garage_status;
 static AppTimerHandle garage_poller;
 static bool get_garage_status_running = false;
 static bool set_garage_status_running = false;
+static int keepalive = 0;
 
 
 void pbl_main(void *params)
@@ -79,6 +80,7 @@ static void handle_init(AppContextRef ctx)
 
   // Start timers
   garage_poller = app_timer_send_event(ctx, GARAGE_POLLING_INTERVAL, GARAGE_POLLING_TIMER_COOKIE);
+  keepalive = GARAGE_KEEPALIVE_INTERVAL / GARAGE_POLLING_INTERVAL;
 
   // Get the current status
   get_garage_status();
@@ -95,6 +97,10 @@ static void handle_timer_events(AppContextRef ctx, AppTimerHandle handle, uint32
   {
     get_garage_status();
     garage_poller = app_timer_send_event(ctx, GARAGE_POLLING_INTERVAL, GARAGE_POLLING_TIMER_COOKIE);
+    if (--keepalive <= 0)
+    {
+      window_stack_pop_all(true);
+    }
   }
 }
 
@@ -107,6 +113,7 @@ static void click_provider(ClickConfig** config, void* ctx)
 
 static void toggle_garage_door(ClickRecognizerRef rec, void* ctx)
 {
+  keepalive = GARAGE_KEEPALIVE_INTERVAL / GARAGE_POLLING_INTERVAL;
   set_garage_status(1);
 }
 
