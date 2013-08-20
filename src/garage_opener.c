@@ -20,6 +20,7 @@ static bool get_garage_status(void);
 static void click_provider(ClickConfig** config, void* ctx);
 static void toggle_garage_door(ClickRecognizerRef rec, void* ctx);
 static bool set_garage_status(int value);
+static char* make_message(char* str);
 
 
 PBL_APP_INFO(HTTP_UUID,
@@ -138,12 +139,7 @@ static void success(int32_t cookie, int status, DictionaryIterator* recv, void* 
       Tuple* data = dict_find(recv, GARAGE_STATUS_ID);
       if (data && data->type == TUPLE_CSTRING)
       {
-#define BUFSZ 200
-        static char text[BUFSZ];
-        strncpy(text, GARAGE_TARGET_NAME, BUFSZ);
-        strncat(text, ": ", BUFSZ);
-        strncat(text, data->value->cstring, BUFSZ);
-        text_layer_set_text(&garage_status, text);
+        text_layer_set_text(&garage_status, make_message(data->value->cstring));
       }
       break;
 
@@ -220,8 +216,18 @@ static bool set_garage_status(int value)
     return false;
   }
 
-  text_layer_set_text(&garage_status, "Updating...");
+  text_layer_set_text(&garage_status, make_message("..."));
   set_garage_status_running = true;
 
   return true;
+}
+
+static char* make_message(char* str)
+{
+#define BUFSZ 200
+  static char text[BUFSZ];
+  strncpy(text, GARAGE_TARGET_NAME, BUFSZ);
+  strncat(text, ": ", BUFSZ);
+  strncat(text, str, BUFSZ);
+  return text;
 }
