@@ -11,8 +11,6 @@ static void handle_init(AppContextRef ctx);
 static void handle_deinit(AppContextRef ctx);
 static void handle_timer_events(AppContextRef ctx, AppTimerHandle handle, uint32_t cookie);
 
-static void location(float lat, float lng, float alt, float acc, void* ctx);
-static void reconnect(void* ctx);
 static void failure(int32_t cookie, int status, void* ctx);
 static void success(int32_t cookie, int status, DictionaryIterator* recv, void* ctx);
 static bool get_garage_status(void);
@@ -66,9 +64,7 @@ static void handle_init(AppContextRef ctx)
   http_register_callbacks((HTTPCallbacks)
   {
     .failure = failure,
-    .success = success,
-    .reconnect = reconnect,
-    .location = location
+    .success = success
   }, ctx);
 
   // Setup message
@@ -115,14 +111,6 @@ static void toggle_garage_door(ClickRecognizerRef rec, void* ctx)
 }
 
 // HTTP
-
-static void location(float lat, float lng, float alt, float acc, void* ctx)
-{
-}
-
-static void reconnect(void* ctx)
-{
-}
 
 static void failure(int32_t cookie, int status, void* ctx)
 {
