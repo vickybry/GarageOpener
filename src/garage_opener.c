@@ -138,10 +138,11 @@ static void success(int32_t cookie, int status, DictionaryIterator* recv, void* 
       Tuple* data = dict_find(recv, GARAGE_STATUS_ID);
       if (data && data->type == TUPLE_CSTRING)
       {
-        static char text[200];
-        strcpy(text, GARAGE_TARGET_NAME);
-        strcat(text, ": ");
-        strcat(text, data->value->cstring);
+#define BUFSZ 200
+        static char text[BUFSZ];
+        strncpy(text, GARAGE_TARGET_NAME, BUFSZ);
+        strncat(text, ": ", BUFSZ);
+        strncat(text, data->value->cstring, BUFSZ);
         text_layer_set_text(&garage_status, text);
       }
       break;
