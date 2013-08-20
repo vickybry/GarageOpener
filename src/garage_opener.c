@@ -152,7 +152,7 @@ static void success(int32_t cookie, int status, DictionaryIterator* recv, void* 
   }
 }
 
-static bool get_garage_status()
+static void add_cache_busting(DictionaryIterator* body)
 {
   static int cacheBust = 0;
 
@@ -160,7 +160,11 @@ static bool get_garage_status()
   {
     cacheBust = time(NULL);
   }
+  dict_write_int32(body, GARAGE_CACHE_BUST_ID, cacheBust++);
+}
 
+static bool get_garage_status()
+{
   if (get_garage_status_running)
   {
     return false;
@@ -173,8 +177,8 @@ static bool get_garage_status()
     return false;
   }
 
-  dict_write_int32(body, GARAGE_CACHE_BUST_ID, cacheBust++);
   dict_write_cstring(body, GARAGE_TARGET_ID, GARAGE_TARGET_NAME);
+  add_cache_busting(body);
 
   if (http_out_send() != HTTP_OK)
   {
@@ -188,13 +192,6 @@ static bool get_garage_status()
 
 static bool set_garage_status(int value)
 {
-  static int cacheBust = 0;
-
-  if (cacheBust == 0)
-  {
-    cacheBust = time(NULL);
-  }
-
   if (set_garage_status_running)
   {
     return false;
@@ -207,9 +204,9 @@ static bool set_garage_status(int value)
     return false;
   }
 
-  dict_write_int32(body, GARAGE_CACHE_BUST_ID, cacheBust++);
   dict_write_cstring(body, GARAGE_TARGET_ID, GARAGE_TARGET_NAME);
   dict_write_int32(body, GARAGE_OVERRIDE_ID, value);
+  add_cache_busting(body);
 
   if (http_out_send() != HTTP_OK)
   {
