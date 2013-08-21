@@ -123,10 +123,24 @@ static void failure(int32_t cookie, int status, void* ctx)
 {
   get_garage_status_running = false;
   set_garage_status_running = false;
+  switch (status - 1000)
+  {
+    case HTTP_NOT_CONNECTED:
+    case HTTP_BRIDGE_NOT_RUNNING:
+      text_layer_set_background_color(&garage_status, GColorBlack);
+      text_layer_set_text_color(&garage_status, GColorWhite);
+      break;
+
+    default:
+      break;
+  }
 }
 
 static void success(int32_t cookie, int status, DictionaryIterator* recv, void* ctx)
 {
+  text_layer_set_background_color(&garage_status, GColorWhite);
+  text_layer_set_text_color(&garage_status, GColorBlack);
+
   switch (cookie)
   {
     case GARAGE_COOKIE_1:
